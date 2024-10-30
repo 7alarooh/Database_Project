@@ -244,17 +244,67 @@
 			 set AvailabilityStatus=0
 			 where RoomID =@RoomID
 		 end
-
+		 
 		 --test
-		 exec sp_MarkRoomUnavailable @RoomID =1
-
+		 exec sp_MarkRoomUnavailable @RoomID =2
+		 select * from Room
 
 --    • Stored Procedure 2: sp_UpdateBookingStatus 
 --      ✓Create a stored procedure to change the status of a booking to ‘Check-in’,
 --        ‘Check-out’, or ‘Canceled’ based on the current date and booking details. 
+         create procedure sp_UpdateBookingStatus
+             @BookingID int
+         as
+         begin
+             declare @CurrentDate date = getdate()
+             declare @CheckInDate date
+             declare @CheckOutDate date
 
+             -- to get the check-in and check-out dates for the specified booking
+             select @CheckInDate = CheckInDate, @CheckOutDate = CheckOutDate
+             from Booking
+             where BookingID = @BookingID
+
+             -- to update the booking status based on current date
+             if @CurrentDate < @CheckInDate
+             begin
+                 update Booking
+                 set Status = 'Pending'  -- Or whatever is appropriate before check-in
+                 where BookingID = @BookingID
+             end
+             else if @CurrentDate >= @CheckInDate AND @CurrentDate < @CheckOutDate
+             begin
+                 update Booking
+                 set Status = 'Check-in'
+                 where BookingID = @BookingID
+             end
+             else if @CurrentDate >= @CheckOutDate
+             begin
+                 update Booking
+                 set Status = 'Check-out'
+                 where BookingID = @BookingID
+             end
+         end
+
+		 --test 
+		 exec sp_UpdateBookingStatus @BookingID = 1
 
 
 --    • Stored Procedure 3: sp_RankGuestsBySpending 
 --      ✓Create a stored procedure that ranks guests by total spending across 
 --        all bookings.
+         create procedure sp_RankGuestsBySpending
+		 as
+		 begin
+		 select g.GuestID, g.Guest_Name,
+		        sum(b.TotalCost) as TotalSpending,
+				rank() over (order by sum(b.TotalCost) desc) as [Spending Rank]
+		 from Guest g inner join
+		      Booking b on g.GuestID = b.GuestID
+		 group by g.guestID, g.Guest_Name
+		 order by TotalSpending
+		 end
+
+
+		 --test
+		 exec sp_RankGuestsBySpending
