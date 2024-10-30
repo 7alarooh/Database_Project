@@ -47,3 +47,43 @@
            create nonclustered index idx_Booking_Roomid_Checkin_Checkout 
 		   on Booking (RoomID, CheckinDate, CheckoutDate)
 
+---------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+
+-- 2. Views 
+--    • View 1: ViewTopRatedHotels 
+--      ✓Create a view that displays the top-rated hotels (rating above 4.5)
+--        along with the total number of rooms and average room price for each hotel. 
+
+         create view viewTopRatedHotels as
+         select h.HotelID, h.Hotel_Name as HotelName,h.Rating,
+                count(r.RoomID) as TotalRooms,
+                avg(r.PricePerNight) as AverageRoomPrice
+         from Hotel h join 
+              Room r on h.HotelID = r.HotelID
+         where h.Rating > 4.5
+         group by h.HotelID, h.Hotel_Name, h.Rating
+
+		 select * from ViewTopRatedHotels
+
+--    • View 2: ViewGuestBookings 
+--      ✓Create a view that lists each guest along with their total number of bookings
+--        and the total amount spent on all bookings. 
+
+
+
+--    • View 3: ViewAvailableRooms 
+--      ✓Create a view that lists available rooms for each hotel, grouped by room type 
+--        and sorted by price in ascending order. 
+
+
+
+--    • View 4: ViewBookingSummary 
+--      ✓Create a view that summarizes bookings by hotel, showing the total number 
+--        of bookings, confirmed bookings, pending bookings, and canceled bookings. 
+
+
+
+--    • View 5: ViewPaymentHistory 
+--      ✓Create a view that lists all payment records along with the guest name, 
+--        hotel name, booking status, and total payment made by each guest for each booking. 
