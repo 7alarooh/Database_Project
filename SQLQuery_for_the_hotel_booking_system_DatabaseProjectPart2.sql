@@ -17,10 +17,14 @@
 --    • Room Table Indexes 
 --      ✓ Add a clustered index on the HotelID and RoomNumber 
 --         columns to optimize room lookup within a hotel 
+		   create nonclustered index idx_Room_HotelID_RoomNumber
+           on Room (HotelID, RoomNumber)
+
 
 --      ✓ Add a non-clustered index on the RoomType column 
 --         to improve searches filtering by room type. 
-
+           create nonclustered index idx_Room_RoomType
+           on Room (Type)
 
 
 --    • Booking Table Indexes 
