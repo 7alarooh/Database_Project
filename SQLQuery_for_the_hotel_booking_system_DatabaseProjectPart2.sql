@@ -337,6 +337,39 @@
 --      ✓Create a trigger that calculates the total revenue for 
 --        a hotel whenever a new payment is added. 
 
+		 Alter trigger trg_CalculateTotalRevenue
+		 on Payment
+		 after insert 
+		 as
+		 begin
+ 		    declare @HotelID int
+			declare @TotalRevenue DECIMAL(18, 2)
+
+			--
+			SELECT @HotelID = h.HotelID,
+                   @TotalRevenue = ( SELECT SUM(p.Amount)
+				                     FROM Payment p
+									 JOIN Booking b ON p.BookingID = b.BookingID
+									 JOIN Room r ON b.RoomID = r.RoomID
+									 WHERE r.HotelID = h.HotelID
+									 )
+            FROM  Booking b
+             JOIN Room r ON b.RoomID = r.RoomID
+             JOIN Hotel h ON r.HotelID = h.HotelID
+             JOIN Payment p ON b.BookingID = p.BookingID
+            ORDER BY h.HotelID
+			--
+
+			select 'Total Revenue for HotelID ' + CAST(@HotelID AS NVARCHAR(10)) + 
+          ' is: ' + CAST(@TotalRevenue AS NVARCHAR(18))
+	   end
+
+	   -- test
+	   insert into Payment (BookingID, Amount, Date,Method) 
+       values (12, 600.00, getdate(),'Credit Card')
+
+	   insert into Payment (BookingID, Amount, Date,Method) 
+       values (7, 420, getdate(),'Credit Card')
 
 --    • Trigger 3: trg_CheckInDateValidation 
 --      ✓Create a trigger that prevents the insertion of bookings
