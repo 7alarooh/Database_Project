@@ -374,3 +374,19 @@
 --    • Trigger 3: trg_CheckInDateValidation 
 --      ✓Create a trigger that prevents the insertion of bookings
 --        with a check-in date greater than the check out date. 
+		 create trigger trg_CheckInDateValidation
+		 on Booking
+		 after insert 
+		 as
+		 begin
+		    if exists (
+			     select 1
+				 from Booking b
+				 join inserted i on b.BookingID=i.BookingID
+				 where i.CheckInDate>i.CheckOutDate)
+			begin
+			   RAISERROR('Check-in date cannot be greater than check-out date.', 16, 1);
+        ROLLBACK TRANSACTION;
+		end
+		end
+
