@@ -69,8 +69,15 @@
 --    • View 2: ViewGuestBookings 
 --      ✓Create a view that lists each guest along with their total number of bookings
 --        and the total amount spent on all bookings. 
+        create view ViewGuestBookings as
+        select g.GuestID, g.Guest_Name,
+		      count(b.BookingID) as TotalBookings,
+              sum(b.TotalCost) as TotalAmountSpent
+        from Guest g left join 
+             Booking b on g.GuestID = b.GuestID
+        group by g.GuestID, g.Guest_Name
 
-
+		select * from ViewGuestBookings
 
 --    • View 3: ViewAvailableRooms 
 --      ✓Create a view that lists available rooms for each hotel, grouped by room type 
