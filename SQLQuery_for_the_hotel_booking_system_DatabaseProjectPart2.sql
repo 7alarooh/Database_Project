@@ -98,7 +98,21 @@
 --      ✓Create a view that summarizes bookings by hotel, showing the total number 
 --        of bookings, confirmed bookings, pending bookings, and canceled bookings. 
 
-
+        create view ViewBookingSummary as
+        select h.HotelID, h.Hotel_Name,
+               count(b.BookingID) AS TotalBookings,
+               sum(CASE WHEN b.Status = 'Confirmed' THEN 1 ELSE 0 END) AS ConfirmedBookings,
+               sum(CASE WHEN b.Status = 'Pending' THEN 1 ELSE 0 END) AS PendingBookings,
+               sum(CASE WHEN b.Status = 'Canceled' THEN 1 ELSE 0 END) AS CanceledBookings
+        from Booking b join 
+             Hotel h on b.RoomID in (select RoomID 
+			                         from Room 
+									 where HotelID = h.HotelID)
+        GROUP BY  h.HotelID, h.Hotel_Name
+		
+		
+		select *
+         from ViewBookingSummary
 
 --    • View 5: ViewPaymentHistory 
 --      ✓Create a view that lists all payment records along with the guest name, 
