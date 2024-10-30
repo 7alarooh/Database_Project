@@ -82,6 +82,15 @@
 --    • View 3: ViewAvailableRooms 
 --      ✓Create a view that lists available rooms for each hotel, grouped by room type 
 --        and sorted by price in ascending order. 
+        create view ViewAvailableRooms as
+        select r.RoomID,r.RoomNumber,r.Type,r.PricePerNight,h.HotelID,h.Hotel_Name
+        from Room r join 
+             Hotel h on r.HotelID = h.HotelID
+         where r.AvailabilityStatus = 1 
+
+		 select *
+         from ViewAvailableRooms
+         order by HotelID, Type, PricePerNight asc
 
 
 
