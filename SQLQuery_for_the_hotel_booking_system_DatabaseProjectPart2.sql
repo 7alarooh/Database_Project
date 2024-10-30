@@ -308,3 +308,36 @@
 
 		 --test
 		 exec sp_RankGuestsBySpending
+
+---------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+--5. Triggers 
+--    • Trigger 1: trg_UpdateRoomAvailability 
+--      ✓Create a trigger that automatically updates the room’s 
+--        availability to ‘Unavailable’ when a new booking is added. 
+		 alter trigger trg_UpdateRoomAvailability
+		 on Booking
+		 after insert
+		 as 
+		 begin
+                 update Room
+				 set AvailabilityStatus=0
+				 from Room r inner join
+				 inserted i on r.RoomID=i.RoomID
+				 where r.AvailabilityStatus !=0
+		 end
+
+		 --test
+		 INSERT INTO Booking (dbo.GuestID, RoomID, BookingDate, CheckInDate, CheckOutDate, Status,PricePerNight)
+         VALUES (7, 9, '2024-11-01', '2024-11-05', '2024-11-10', 'Confirmed',350)
+
+
+
+--    • Trigger 2: trg_CalculateTotalRevenue 
+--      ✓Create a trigger that calculates the total revenue for 
+--        a hotel whenever a new payment is added. 
+
+
+--    • Trigger 3: trg_CheckInDateValidation 
+--      ✓Create a trigger that prevents the insertion of bookings
+--        with a check-in date greater than the check out date. 
