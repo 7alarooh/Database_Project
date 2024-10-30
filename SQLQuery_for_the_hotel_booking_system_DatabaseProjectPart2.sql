@@ -197,6 +197,35 @@
 --    • Function 3: CalculateOccupancyRate 
 --      ✓Create a function that takes HotelID as input and returns 
 --        the occupancy rate of that hotel based on bookings made within the last 30 days. 
+         create function CalculateOccupancyRate (@HotelID int)
+         returns float
+         as
+         begin
+             declare @TotalRooms int
+             declare @BookedRooms int
+             declare @OccupancyRate float
 
+             -- get the total number of rooms
+             select @TotalRooms = count(*)
+             from Room
+             where HotelID = @HotelID
 
+             -- get the number of booked rooms in the last 30 days
+             select @BookedRooms = count( distinct r.RoomID)
+             from Booking b inner join
+                  Room r on b.RoomID = r.RoomID
+             where r.HotelID = @HotelID
+               and b.CheckInDate <= getdate() and b.CheckOutDate >= dateadd(day, -30, getdate())
+               and b.Status in ('Confirmed', 'Check-in')
+
+             -- Calculate occupancy rate
+             if @TotalRooms > 0
+                 set @OccupancyRate = (@BookedRooms * 1.0 / @TotalRooms) * 100
+             else
+                 set @OccupancyRate = 0
+
+             return @OccupancyRate
+         end
          --test
+		 select dbo.CalculateOccupancyRate(1) as OccupancyRate
+		 select dbo.CalculateOccupancyRate(4) as OccupancyRate
