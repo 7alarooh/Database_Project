@@ -101,14 +101,14 @@
         create view ViewBookingSummary as
         select h.HotelID, h.Hotel_Name,
                count(b.BookingID) AS TotalBookings,
-               sum(CASE WHEN b.Status = 'Confirmed' THEN 1 ELSE 0 END) AS ConfirmedBookings,
-               sum(CASE WHEN b.Status = 'Pending' THEN 1 ELSE 0 END) AS PendingBookings,
-               sum(CASE WHEN b.Status = 'Canceled' THEN 1 ELSE 0 END) AS CanceledBookings
+               sum(case when b.Status = 'Confirmed' then 1 else 0 end) as ConfirmedBookings,
+               sum(case when b.Status = 'Pending' then 1 else 0 end) as PendingBookings,
+               sum(case when b.Status = 'Canceled' then 1 else 0 end) as CanceledBookings
         from Booking b join 
              Hotel h on b.RoomID in (select RoomID 
 			                         from Room 
 									 where HotelID = h.HotelID)
-        GROUP BY  h.HotelID, h.Hotel_Name
+        group by  h.HotelID, h.Hotel_Name
 		
 		
 		select *
@@ -134,3 +134,41 @@
 
 		select *
          from ViewPaymentHistory
+
+---------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+-- 3. Functions 
+--    • Function 1: GetHotelAverageRating 
+--      ✓Create a function that takes HotelID as an input and returns 
+--        the average rating of that hotel based on guest reviews. 
+
+         create function GetHotelAverageRating (@HotelID int)
+         returns decimal(3, 2)
+         as
+         begin
+              declare @AverageRating DECIMAL(3, 2)
+
+             select @AverageRating = avg(rev.Rating)
+             from Review rev join 
+	              Hotel_Review hr on rev.ReviewID = hr.ReviewID
+             where hr.HotelID = @HotelID
+
+             return @AverageRating
+         end
+
+		 --test
+		 select dbo.GetHotelAverageRating(5) AS AverageRatingForHotel1
+		 
+		 select HotelID, Hotel_Name,
+		        dbo.GetHotelAverageRating(HotelID) AS AverageRating
+		 from Hotel 
+
+--    • Function 2: GetNextAvailableRoom 
+--      ✓Create a function that finds the next available room of 
+--        a specific type within a given hotel. 
+
+
+
+--    • Function 3: CalculateOccupancyRate 
+--      ✓Create a function that takes HotelID as input and returns 
+--        the occupancy rate of that hotel based on bookings made within the last 30 days. 
