@@ -63,7 +63,7 @@
               Room r on h.HotelID = r.HotelID
          where h.Rating > 4.5
          group by h.HotelID, h.Hotel_Name, h.Rating
-
+         --test
 		 select * from ViewTopRatedHotels
 
 --    • View 2: ViewGuestBookings 
@@ -76,7 +76,7 @@
         from Guest g left join 
              Booking b on g.GuestID = b.GuestID
         group by g.GuestID, g.Guest_Name
-
+         --test
 		select * from ViewGuestBookings
 
 --    • View 3: ViewAvailableRooms 
@@ -87,7 +87,7 @@
         from Room r join 
              Hotel h on r.HotelID = h.HotelID
          where r.AvailabilityStatus = 1 
-
+         --test
 		 select *
          from ViewAvailableRooms
          order by HotelID, Type, PricePerNight asc
@@ -110,7 +110,7 @@
 									 where HotelID = h.HotelID)
         group by  h.HotelID, h.Hotel_Name
 		
-		
+         --test		
 		select *
          from ViewBookingSummary
 
@@ -131,7 +131,7 @@
 			 Room r on b.RoomID = r.RoomID
 			 join 
 			 Hotel h ON r.HotelID = h.HotelID
-
+         --test
 		select *
          from ViewPaymentHistory
 
@@ -166,9 +166,37 @@
 --    • Function 2: GetNextAvailableRoom 
 --      ✓Create a function that finds the next available room of 
 --        a specific type within a given hotel. 
+         create function GetNextAvailableRoom 
+         ( @HotelID int , 
+		   @RoomType nvarchar(50)
+		   )
+         returns int
+         as
+         begin
+             declare @NextAvailableRoom int
 
+             select top 1 @NextAvailableRoom = RoomNumber 
+             from Room
+             where HotelID = @HotelID
+                   and Type = @RoomType
+                   and RoomID not in (select RoomID
+				                      from Booking 
+									  where (CheckInDate <= getdate() AND CheckOutDate >= getdate())
+									  )
+			 order by RoomNumber
+
+         return @NextAvailableRoom
+         end
+
+
+         --test
+		 select dbo.GetNextAvailableRoom(1, 'Double') as NextAvailableRoom
+		 select dbo.GetNextAvailableRoom(1, 'Single') as NextAvailableRoom
 
 
 --    • Function 3: CalculateOccupancyRate 
 --      ✓Create a function that takes HotelID as input and returns 
 --        the occupancy rate of that hotel based on bookings made within the last 30 days. 
+
+
+         --test
