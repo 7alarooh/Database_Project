@@ -117,3 +117,20 @@
 --    • View 5: ViewPaymentHistory 
 --      ✓Create a view that lists all payment records along with the guest name, 
 --        hotel name, booking status, and total payment made by each guest for each booking. 
+        create view ViewPaymentHistory as
+        select g.Guest_Name, h.Hotel_Name,
+               b.Status as BookingStatus,
+               p.Amount as TotalPayment,
+               p.Date as PaymentDate
+        from Payment p 
+		     join
+             Booking b on p.BookingID = b.BookingID
+			 join
+			 Guest g on b.GuestID = g.GuestID
+			 join 
+			 Room r on b.RoomID = r.RoomID
+			 join 
+			 Hotel h ON r.HotelID = h.HotelID
+
+		select *
+         from ViewPaymentHistory
