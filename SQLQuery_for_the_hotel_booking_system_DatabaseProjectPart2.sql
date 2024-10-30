@@ -229,3 +229,32 @@
          --test
 		 select dbo.CalculateOccupancyRate(1) as OccupancyRate
 		 select dbo.CalculateOccupancyRate(4) as OccupancyRate
+
+---------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+--4. Stored Procedures 
+--    • Stored Procedure 1: sp_MarkRoomUnavailable 
+--      ✓Create a stored procedure that updates the room’s availability status 
+--        to unavailable once a booking is confirmed. 
+         create procedure sp_MarkRoomUnavailable
+		 @RoomID int
+		 as
+		 begin
+             update Room
+			 set AvailabilityStatus=0
+			 where RoomID =@RoomID
+		 end
+
+		 --test
+		 exec sp_MarkRoomUnavailable @RoomID =1
+
+
+--    • Stored Procedure 2: sp_UpdateBookingStatus 
+--      ✓Create a stored procedure to change the status of a booking to ‘Check-in’,
+--        ‘Check-out’, or ‘Canceled’ based on the current date and booking details. 
+
+
+
+--    • Stored Procedure 3: sp_RankGuestsBySpending 
+--      ✓Create a stored procedure that ranks guests by total spending across 
+--        all bookings.
